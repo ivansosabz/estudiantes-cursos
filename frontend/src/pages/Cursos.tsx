@@ -11,6 +11,7 @@ function Cursos() {
     const [cursos, setCursos] = useState<Curso[]>([]);
     const [nombre, setNombre] = useState('');
     const [descripcion, setDescripcion] = useState('');
+    const [editandoId, setEditandoId] = useState<number | null>(null);
 
     const fetchCursos = async () => {
         const res = await axios.get('http://localhost:3000/api/cursos');
@@ -19,7 +20,16 @@ function Cursos() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        await axios.post('http://localhost:3000/api/cursos', { nombre, descripcion });
+
+        if (editandoId === null) {
+            // Crear nuevo curso
+            await axios.post('http://localhost:3000/api/cursos', { nombre, descripcion });
+        } else {
+            // Editar curso existente
+            await axios.put(`http://localhost:3000/api/cursos/${editandoId}`, { nombre, descripcion });
+            setEditandoId(null);
+        }
+
         setNombre('');
         setDescripcion('');
         fetchCursos();
@@ -28,6 +38,18 @@ function Cursos() {
     const handleDelete = async (id: number) => {
         await axios.delete(`http://localhost:3000/api/cursos/${id}`);
         fetchCursos();
+    };
+
+    const handleEdit = (curso: Curso) => {
+        setNombre(curso.nombre);
+        setDescripcion(curso.descripcion);
+        setEditandoId(curso.id);
+    };
+
+    const cancelarEdicion = () => {
+        setNombre('');
+        setDescripcion('');
+        setEditandoId(null);
     };
 
     useEffect(() => {
@@ -58,7 +80,14 @@ function Cursos() {
                         required
                     />
                 </div>
-                <button type="submit" className="btn btn-primary">Crear Curso</button>
+                <button type="submit" className="btn btn-success me-2">
+                    {editandoId === null ? 'Crear Curso' : 'Actualizar Curso'}
+                </button>
+                {editandoId !== null && (
+                    <button type="button" className="btn btn-secondary" onClick={cancelarEdicion}>
+                        Cancelar
+                    </button>
+                )}
             </form>
 
             <h4>Lista de Cursos</h4>
@@ -69,7 +98,20 @@ function Cursos() {
                             <strong>{curso.nombre}</strong><br />
                             <small>{curso.descripcion}</small>
                         </div>
-                        <button className="btn btn-danger btn-sm" onClick={() => handleDelete(curso.id)}>Eliminar</button>
+                        <div>
+                            <button
+                                className="btn btn-warning btn-sm me-2"
+                                onClick={() => handleEdit(curso)}
+                            >
+                                Editar
+                            </button>
+                            <button
+                                className="btn btn-danger btn-sm"
+                                onClick={() => handleDelete(curso.id)}
+                            >
+                                Eliminar
+                            </button>
+                        </div>
                     </li>
                 ))}
             </ul>
