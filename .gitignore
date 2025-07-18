@@ -1,0 +1,29 @@
+# Node
+node_modules/
+dist/
+.env
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# SQLite DB
+*.sqlite
+*.sqlite-journal
+
+# Vite
+.vite/
+
+# React build
+frontend/dist/
+
+# IDEs/editores
+.vscode/
+.idea/
+*.sw?
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
