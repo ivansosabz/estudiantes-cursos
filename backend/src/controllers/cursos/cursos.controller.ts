@@ -16,23 +16,30 @@ export const getCursoById = async (req: Request, res: Response) => {
 };
 
 export const createCurso = async (req: Request, res: Response) => {
-    const { nombre } = req.body;
+    const { nombre, descripcion } = req.body;
     if (!nombre) return res.status(400).json({ error: 'El nombre es obligatorio' });
 
     const db = await openDb();
-    const result = await db.run('INSERT INTO cursos (nombre) VALUES (?)', [nombre]);
-    res.status(201).json({ id: result.lastID, nombre });
+    const result = await db.run(
+        'INSERT INTO cursos (nombre, descripcion) VALUES (?, ?)',
+        [nombre, descripcion || '']
+    );
+    res.status(201).json({ id: result.lastID, nombre, descripcion });
 };
 
 export const updateCurso = async (req: Request, res: Response) => {
     const id = Number(req.params.id);
-    const { nombre } = req.body;
+    const { nombre, descripcion } = req.body;
     if (!nombre) return res.status(400).json({ error: 'El nombre es obligatorio' });
 
     const db = await openDb();
-    const result = await db.run('UPDATE cursos SET nombre = ? WHERE id = ?', [nombre, id]);
+    const result = await db.run(
+        'UPDATE cursos SET nombre = ?, descripcion = ? WHERE id = ?',
+        [nombre, descripcion || '', id]
+    );
     if (result.changes === 0) return res.status(404).json({ error: 'Curso no encontrado' });
-    res.json({ id, nombre });
+
+    res.json({ id, nombre, descripcion });
 };
 
 export const deleteCurso = async (req: Request, res: Response) => {
