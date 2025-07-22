@@ -4,21 +4,40 @@ import Login from './pages/Login';
 import Cursos from './pages/Cursos';
 import Estudiantes from './pages/Estudiantes';
 import Reporte from './pages/Reporte';
+import PrivateRoute from './components/PrivateRoute';
 
 function App() {
   return (
     <Routes>
-      {/* Ruta pública */}
       <Route path="/login" element={<Login />} />
 
-      {/* Rutas protegidas con navbar (Layout) */}
       <Route element={<Layout />}>
-        <Route path="/cursos" element={<Cursos />} />
-        <Route path="/estudiantes" element={<Estudiantes />} />
-        <Route path="/reporte" element={<Reporte />} />
+        <Route
+          path="/cursos"
+          element={
+            <PrivateRoute>
+              <Cursos />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/estudiantes"
+          element={
+            <PrivateRoute>
+              <Estudiantes />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/reporte"
+          element={
+            <PrivateRoute>
+              <Reporte />
+            </PrivateRoute>
+          }
+        />
       </Route>
 
-      {/* Redirección para cualquier otra ruta */}
       <Route path="*" element={<Navigate to="/login" />} />
     </Routes>
   );
