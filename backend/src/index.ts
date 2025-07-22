@@ -5,6 +5,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import cursosRoutes from './routes/cursos/cursos.routes';
 import estudiantesRoutes from './routes/estudiantes/estudiantes.routes';
+import reportesRoutes from './routes/reportes/reportes.routes';
 
 
 
@@ -33,3 +34,5 @@ app.listen(PORT, () => {
 app.use('/api/cursos', cursosRoutes);
 // Rutas de estudiantes
 app.use('/api/estudiantes', estudiantesRoutes);
+// Rutas de reportes
+app.use('/api/reportes', reportesRoutes);
