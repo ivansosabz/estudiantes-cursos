@@ -1,4 +1,3 @@
-// src/pages/Login.tsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -6,6 +5,7 @@ import axios from 'axios';
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [isRegister, setIsRegister] = useState(false); // Nuevo: modo login/registro
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
@@ -14,21 +14,29 @@ const Login = () => {
         setError('');
 
         try {
-            const res = await axios.post('http://localhost:3000/api/auth/login', {
+            const endpoint = isRegister ? 'register' : 'login';
+            const res = await axios.post(`http://localhost:3000/api/auth/${endpoint}`, {
                 username,
                 password
             });
 
-            localStorage.setItem('token', res.data.token);
-            navigate('/cursos'); // 👉 Redirige a /cursos
+            if (!isRegister) {
+                localStorage.setItem('token', res.data.token);
+                navigate('/cursos');
+            } else {
+                alert('Usuario registrado correctamente. Ahora podés iniciar sesión.');
+                setIsRegister(false);
+            }
         } catch (err: any) {
-            setError(err.response?.data?.error || 'Error al iniciar sesión');
+            setError(err.response?.data?.error || 'Error en la solicitud');
         }
     };
 
     return (
         <div className="container mt-5" style={{ maxWidth: '400px' }}>
-            <h2 className="text-center mb-4">Iniciar sesión</h2>
+            <h2 className="text-center mb-4">
+                {isRegister ? 'Crear cuenta' : 'Iniciar sesión'}
+            </h2>
 
             {error && <div className="alert alert-danger">{error}</div>}
 
@@ -56,9 +64,21 @@ const Login = () => {
                 </div>
 
                 <button type="submit" className="btn btn-primary w-100">
-                    Ingresar
+                    {isRegister ? 'Registrarse' : 'Ingresar'}
                 </button>
             </form>
+
+            <div className="text-center mt-3">
+                <button
+                    className="btn btn-link"
+                    onClick={() => {
+                        setError('');
+                        setIsRegister(!isRegister);
+                    }}
+                >
+                    {isRegister ? '¿Ya tienes cuenta? Iniciar sesión' : '¿No tienes cuenta? Registrate'}
+                </button>
+            </div>
         </div>
     );
 };
